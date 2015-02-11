@@ -1,0 +1,76 @@
+<div class="container" style="margin-left:-15px">
+  <h2>
+    <%= "#{@project.title} <small>by #{name(@project.user)}</small>".html_safe %>
+    <span class="pull-right">
+      <%= form_for [@project, Tag.new], html: { style: "display: inline-block" } do |f| %>
+        <%= f.text_field :title %>
+        <%= f.submit "Tag", class: "btn btn-default" %>
+      <% end %>
+      <%= link_to "edit", edit_project_path(@project), class: "btn btn-warning" %>
+      <%= link_to "delete", project_path(@project), method: :delete, data: {confirm: "Are you sure? This is permanent and cannot be undone."}, class: "btn btn-danger" %>
+    </span>
+  </h2>
+  <%= "<em>Due #{@project.due_date}</em><br />".html_safe if @project.due_date %>
+  <p>
+    <% if (@project.user != current_user) && (@project.project_members.include? current_user) %>
+      [<%= link_to "leave", project_member_path(@project, current_user.member_for(@project)), method: :delete %>]
+    <% elsif @project.user != current_user %>
+      [<%= link_to "join", project_members_path(@project), method: :post %>]
+    <% end %>
+    <% @members = ["#{@project.user.first_name} #{@project.user.last_name}"] %>
+    <% unless @project.members.empty? %>
+      <% @members << @project.members.map { |member| user = User.find member.user_id; user.first_name + ' ' + user.last_name } %>
+    <% end %>
+    Members: <%= @members.join(', ') %>
+  </p>
+  <p>
+    [<%= current_user.has_favorited?(@project) ? link_to('unfavorite', project_favorite_path(@project, current_user.favorite_for(@project)), method: :delete) : link_to('favorite', project_favorites_path(@project), method: :post) %>]
+    <%= @project.tags.exists? ? 'Tags: ' : ' ' %><% @project.tags.each do |tag| %>[<%= link_to tag.title, tag %> <%= link_to 'x', [@project, tag], method: :delete %>] <% end %>
+  </p>
+  <%= @project.body %>
+</div>
+<hr>
+<div class="container" style="margin-left:-15px">
+  <div class="row">
+    <h3>Tasks</h3>
+  </div>
+  <div class="row">
+    <div id="task_form" class="col-md-4">
+      <%= render partial: "/tasks/form", locals: { project: @project, task: Task.new } %>
+    </div>
+    <div id="incomplete_tasks" class="col-md-4">
+      <h4>Incomplete Tasks</h4>
+      <% @project.tasks.where('complete = false').each do |task| %>
+        <%= render partial: "/tasks/task_complete", locals: { project: @project, task: task } %>
+      <% end %>
+    </div>
+    <div id="complete_tasks" class="col-md-4">
+      <h4>Completed Tasks</h4>
+      <% @project.tasks.where('complete = true').each do |task| %>
+        <%= render partial: "/tasks/task_complete", locals: { project: @project, task: task } %>
+      <% end %>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="container" style="margin-left:-15px">
+  <div class="row">
+    <h3>Discussions</h3>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <%= render "discussions/form" %>
+    </div>
+    <div class="col-md-8">
+      <% @project.discussions.each do |discussion| %>
+        <div class="row">
+          <%= link_to discussion.title, [@project, discussion] %>
+          <span class="pull-right">
+            <%= link_to "Edit", edit_project_discussion_path(@project, discussion), class: "btn btn-warning btn-sm" %>
+            <%= link_to "Delete", [@project, discussion], method: :delete, class: "btn btn-danger btn-sm", data: {confirm: "Are you sure? This is permanent and cannot be undone."} %>
+          </div>
+        </li>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>RailsPMTool</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
+  <head>
+    <title>RailsPMTool</title>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
 
-<%= yield %>
+    <div class="container">
 
-</body>
+      <h1>Rails PM Tool <small>by Tyler Suzuki Nelson</small></h1>
+
+      <nav class="navbar" style="margin-bottom: 20px">
+
+        <ul class="nav nav-pills">
+
+          <li role="presentation"><%= link_to "Home", root_path %></li>
+          <li role="presentation"><%= link_to "About", about_path %></li>
+          <li role="presentation"><%= link_to "All Projects", projects_path %></li>
+          <li role="presentation"><%= link_to "Create Project", new_project_path %></li>
+          <li role="presentation"><%= link_to "Favorites", favorites_path %></li>
+          <li role="presentation"><%= user_signed_in? ? link_to('Logout', destroy_user_session_path, method: :delete) : link_to('Login', new_user_session_path) %></li>
+
+          <%= form_tag(search_path, method: "patch", style: "display: inline-block", class: "pull-right") %>
+            <%= text_field_tag(:search_term) %>
+            <%= submit_tag("Search", class: "btn btn-default") %>
+          </form>
+        </ul>
+
+      </nav>
+
+      <div id="flash">
+        <%= "<em>#{flash[:notice]}</em><br /><br />".html_safe if flash[:notice] %>
+      </div>
+
+      <%= yield %>
+
+    </div>
+
+  </body>
 </html>

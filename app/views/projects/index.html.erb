@@ -1,0 +1,28 @@
+<div class="container" style="margin-left:-15px">
+  <div class="row">
+    <h2>Projects</h2>
+  </div>
+  <% params['page'] = 1 if !params['page'] || params['page'].to_i <= 0 || params['page'].to_i * 10 > @projects.count + 10 %>
+  <% params['page'] = params['page'].to_i  %>
+  <% @projects.limit(10).offset(10*(params['page'] - 1)).each do |project| %>
+    <div class="row">
+      <%= link_to project.title, project_path(project) %>
+      <span class="pull-right">
+        <%= link_to "edit", edit_project_path(project), class: "btn btn-warning" %>
+        <%= link_to "delete", project_path(project), method: :delete, data: {confirm: "Are you sure? This is permanent and cannot be undone."}, class: "btn btn-danger" %>
+      </span>
+    </div>
+  <% end %>
+  <div class="row" style="text-align:center">
+    <% if @projects.count > 10 && params['page'] > 1 %>
+      <%= link_to "prev", "#{projects_path}?page=#{params['page']-1}", class: "btn btn-default" %>
+    <% else %>
+      <%= link_to "prev", "#{projects_path}?page=#{params['page']-1}", class: "btn btn-default disabled" %>
+    <% end %>
+    <% if @projects.count > 10 && @projects.count > params['page'] * 10 %>
+      <%= link_to "next", "#{projects_path}?page=#{params['page']+1}", class: "btn btn-default" %>
+    <% else %>
+      <%= link_to "next", "#{projects_path}?page=#{params['page']+1}", class: "btn btn-default disabled" %>
+    <% end %>
+  </div>
+</div>

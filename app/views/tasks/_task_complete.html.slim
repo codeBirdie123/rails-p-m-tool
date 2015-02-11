@@ -1,0 +1,4 @@
+.row id="#{dom_id(task)}"
+  = link_to task.title, [project, task]
+  span.pull-right
+    = render partial: "/tasks/complete_button", locals: { project: project, task: task }

@@ -1,4 +1,34 @@
 Rails.application.routes.draw do
+
+  get 'tags/show'
+
+  get 'tags/create'
+
+  get 'tags/destroy'
+
+  devise_for :users, controllers: {registrations: 'registrations'}
+  resources :comments
+
+  resources :discussions
+
+  root "home#index"
+  get "/about" => "home#about"
+  resources :projects do
+    resources :discussions
+    resources :tasks
+    resources :favorites, only: [:create, :destroy]
+    resources :tags, only: [:create, :destroy]
+    resources :members, only: [:create, :destroy]
+  end
+  resources :discussions, only: [] do
+    resources :comments
+  end
+  resources :favorites, only: [:index]
+  resources :tags, only: [:show]
+  patch "/search" => "projects#search"
+  get "/search" => "projects#search"
+  match "/delayed_job" => DelayedJobWeb, anchor: false, via: [:get, :post]
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
